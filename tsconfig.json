@@ -10,5 +10,5 @@
     "verbatimModuleSyntax": true,
     "types": ["node"]
   },
-  "include": ["index.ts", "test/**/*.ts"]
+  "include": ["extensions/**/*.ts", "test/**/*.ts"]
 }

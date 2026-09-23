@@ -22,7 +22,19 @@ This is a tool-based approach, not a provider-specific JSON mode. It requires a 
 
 ## Installation
 
-Install dependencies and register the local package with Pi:
+Install the published package from npm:
+
+```bash
+pi install npm:@ipfans/pi-structured-output@0.1.1
+```
+
+Or install the tagged release from GitHub:
+
+```bash
+pi install git:github.com/ipfans/pi-structured-output@v0.1.1
+```
+
+For local development, install dependencies and register the package directory:
 
 ```bash
 cd /path/to/pi-structured-output
@@ -32,7 +44,7 @@ pi install .
 
 Restart Pi after installation. For a project-local installation, use `pi install -l .` instead; Pi must trust that project to load its resources.
 
-To try the extension without registering it, run `npm install` in this repository, then use `pi -e ./index.ts -p --structured-outputs --json-schema '<schema>' 'Your prompt'`. No build step is needed.
+To try the local package without registering it, run `npm install` in this repository, then use `pi -e . -p --structured-outputs --json-schema '<schema>' 'Your prompt'`. To load only the extension file, use `-e ./extensions/structured-output.ts` instead. No build step is needed.
 
 ## Quick start
 
@@ -166,13 +178,30 @@ Schema validation checks structure and constraints, not semantic accuracy. Alway
 
 ## Development
 
+The package uses Pi's conventional `extensions/` directory with an explicit entry in `package.json`:
+
+```text
+pi-structured-output/
+├── extensions/
+│   └── structured-output.ts
+├── test/
+│   └── structured-output.test.ts
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── biome.json
+└── README.md
+```
+
+Ajv and ajv-formats are runtime dependencies. Pi and TypeBox are host-provided peer dependencies (`"*"`), with development versions for local checks; they are not bundled. The npm tarball contains only the extension, package manifest, and README.
+
 ```bash
 npm ci
 npm run check       # Biome, TypeScript, and tests
 npm pack --dry-run  # Inspect the distributable package
 ```
 
-Tests use Node's built-in test runner and the real Pi CLI against a local mock OpenAI-compatible server. They require no API key or paid model calls. Live provider behavior is not covered by these tests.
+Tests check the npm package contents and load the package directory through the real Pi CLI against a local mock OpenAI-compatible server, using Node's built-in test runner. They require no API key or paid model calls. Live provider behavior is not covered by these tests.
 
 ## References
 

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { once } from "node:events";
 import { closeSync, openSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
@@ -8,9 +8,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { loadSchema } from "../index.ts";
+import { loadSchema } from "../extensions/structured-output.ts";
 
-const extension = fileURLToPath(new URL("../index.ts", import.meta.url));
+const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const cli = fileURLToPath(
   new URL(
     "./bundle/cli.js",
@@ -218,7 +218,7 @@ async function runCli(
       "--no-context-files",
       "--no-session",
       "-e",
-      extension,
+      packageRoot,
       "--provider",
       "structured-test",
       "--model",
@@ -477,6 +477,19 @@ test("real CLI preserves original reference roots and format constraints", async
   assert.equal(result.code, 0, result.stderr);
   assert.equal(result.stdout, '["alice@example.com"]\n');
   assert.equal(result.requests.length, 2);
+});
+
+test("npm package includes only the declared extension and package documentation", () => {
+  const [pack] = JSON.parse(
+    execFileSync("npm", ["pack", "--dry-run", "--json", "--ignore-scripts"], {
+      cwd: packageRoot,
+      encoding: "utf8",
+    }),
+  );
+  assert.deepEqual(
+    pack.files.map((file: { path: string }) => file.path).sort(),
+    ["README.md", "extensions/structured-output.ts", "package.json"],
+  );
 });
 
 test("README example schemas are valid JSON", async () => {

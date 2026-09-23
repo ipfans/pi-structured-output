@@ -1,6 +1,6 @@
 {
   "name": "@ipfans/pi-structured-output",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "JSON Schema-validated structured output for the Pi coding agent CLI",
   "type": "module",
   "repository": {
@@ -18,12 +18,12 @@
     "structured-output"
   ],
   "files": [
-    "index.ts",
+    "extensions/",
     "README.md"
   ],
   "pi": {
     "extensions": [
-      "./index.ts"
+      "./extensions/structured-output.ts"
     ]
   },
   "engines": {
